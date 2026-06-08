@@ -31,6 +31,9 @@ jobs:
       - name: Make vite executable
         run: chmod +x node_modules/.bin/vite
 
+      - name: Make vite executable
+        run: chmod +x node_modules/.bin/vite
+
       - name: Build
         run: npm run build
 
