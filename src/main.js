@@ -1,17 +1,17 @@
+/** AI Cost Simulator - main logic */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
 const routes = {
   default: {
-    h1: `Free AI API Cost Simulator - Estimate LLM Token Pricing Instantly`,
-    title: `Free AI API Cost Simulator - Estimate LLM Token Pricing`,
-    desc: `Estimate API costs for GPT-4, Claude, Gemini, and open-source models. Calculate token expenses for prompts, completions, and fine-tuning before you run.`,
-    keywords: 'AI API cost calculator, LLM token pricing estimator, GPT-4 cost per token, Claude API pricing, Gemini token cost, open source LLM pricing'
-  }
+    title: 'Free AI API Cost Simulator - Estimate LLM Token Pricing',
+    h1: 'Free AI API Cost Simulator - Estimate LLM Token Pricing',
+    desc: 'Estimate API costs for GPT-4, Claude, Gemini, and open-source models. Calculate token expenses for prompts, completions, and fine-tuning before you run.',
+  },
 };
 
 function applyRoute(route) {
-  const r = routes[route];
-  if (!r) return;
+  const r = routes[route] || routes.default;
   document.title = r.title;
   const metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content', r.desc);
@@ -23,4 +23,75 @@ function applyRoute(route) {
   if (canonical) canonical.setAttribute('href', window.location.origin + window.location.pathname);
 }
 
+const MODELS = {
+  'gpt-4o': { input: 2.5, output: 10, label: 'GPT-4o' },
+  'gpt-4o-mini': { input: 0.15, output: 0.6, label: 'GPT-4o Mini' },
+  'gpt-4-turbo': { input: 10, output: 30, label: 'GPT-4 Turbo' },
+  'gpt-3.5-turbo': { input: 0.5, output: 1.5, label: 'GPT-3.5 Turbo' },
+  'claude-3-5-sonnet': { input: 3, output: 15, label: 'Claude 3.5 Sonnet' },
+  'claude-3-opus': { input: 15, output: 75, label: 'Claude 3 Opus' },
+  'gemini-1.5-pro': { input: 1.25, output: 5, label: 'Gemini 1.5 Pro' },
+  'gemini-2.0-flash': { input: 0.1, output: 0.4, label: 'Gemini 2.0 Flash' },
+};
+
+function estimate(model, inputTokens, outputTokens, callsPerMonth) {
+  const pricePer1K = MODELS[model] || MODELS['gpt-4o-mini'];
+  const inputCost = (inputTokens / 1000) * pricePer1K.input;
+  const outputCost = (outputTokens / 1000) * pricePer1K.output;
+  const callCost = inputCost + outputCost;
+  return {
+    perCall: callCost,
+    monthly: callCost * (callsPerMonth || 1),
+    inputRate: pricePer1K.input,
+    outputRate: pricePer1K.output,
+  };
+}
+
+function formatMoney(n) {
+  if (n < 0.01) return '$' + n.toFixed(4);
+  if (n < 1) return '$' + n.toFixed(3);
+  return '$' + n.toFixed(2);
+}
+
+function calc() {
+  const model = $('#model')?.value || 'gpt-4o-mini';
+  const inputTokens = parseInt($('#input-tokens')?.value || '0', 10);
+  const outputTokens = parseInt($('#output-tokens')?.value || '0', 10);
+  const calls = parseInt($('#calls')?.value || '1', 10);
+
+  if (!inputTokens && !outputTokens) {
+    const rv = $('#result-value');
+    const rm = $('#result-meta');
+    if (rv) rv.textContent = '—';
+    if (rm) rm.textContent = 'Enter token counts to estimate';
+    return;
+  }
+
+  const res = estimate(model, inputTokens, outputTokens, calls);
+  const rv = $('#result-value');
+  const rm = $('#result-meta');
+  if (rv) rv.textContent = `${formatMoney(res.monthly)} / month`;
+  if (rm) rm.textContent = `${formatMoney(res.perCall)} per call @ ${res.inputRate}/${res.outputRate} per 1K tokens`;
+}
+
+function initHandlers() {
+  const recalc = () => calc();
+  $$('.input').forEach((el) => el.addEventListener('input', recalc));
+  $('#model')?.addEventListener('change', recalc);
+  $('#calculate-btn')?.addEventListener('click', recalc);
+  $('#reset-btn')?.addEventListener('click', () => {
+    ['input-tokens', 'output-tokens', 'calls'].forEach((id) => {
+      const el = $('#' + id);
+      if (!id.endsWith('tokens')) {
+        if (el) el.value = id === 'calls' ? '1000' : '0';
+      } else {
+        if (el) el.value = '1000';
+      }
+    });
+    calc();
+  });
+  calc();
+}
+
 applyRoute('default');
+initHandlers();

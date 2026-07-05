@@ -32,7 +32,10 @@ function escapeText(str) {
 
 function buildVariantHtml(route) {
   const r = routes[route];
-  if (!r) return;
+  if (!r) {
+    console.error(`Failed to build HTML for route: ${route}`);
+    return null;
+  }
 
   let out = baseHtml;
 
@@ -71,8 +74,8 @@ for (const [route] of Object.entries(routes)) {
   const outPath = path.join(outDir, 'index.html');
   const variantHtml = buildVariantHtml(route);
   if (!variantHtml) {
-    console.error(`Failed to build HTML for route: ${route}`);
-    process.exit(1);
+    console.error(`Skipping route: ${route}`);
+    continue;
   }
   fs.writeFileSync(outPath, variantHtml, 'utf8');
   console.log(`Wrote ${outPath}`);
