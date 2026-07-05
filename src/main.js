@@ -54,24 +54,34 @@ function formatMoney(n) {
 }
 
 function calc() {
-  const model = $('#model').value || 'gpt-4o-mini';
-  const inputTokens = parseInt($('#input-tokens').value || '0', 10);
-  const outputTokens = parseInt($('#output-tokens').value || '0', 10);
-  const calls = parseInt($('#calls').value || '1', 10);
+  try {
+    console.log('[ai-cost] calc start');
+    const model = $('#model').value || 'gpt-4o-mini';
+    const inputTokens = parseInt($('#input-tokens').value || '0', 10);
+    const outputTokens = parseInt($('#output-tokens').value || '0', 10);
+    const calls = parseInt($('#calls').value || '1', 10);
+    console.log('[ai-cost] calc inputs', {model, inputTokens, outputTokens, calls});
+
+  console.log('[ai-cost] calc inputs', {model, inputTokens, outputTokens, calls});
 
   if (!inputTokens && !outputTokens) {
     const rv = $('#result-value');
     const rm = $('#result-meta');
     if (rv) rv.textContent = '—';
     if (rm) rm.textContent = 'Enter token counts to estimate';
+    console.log('[ai-cost] calc empty-result');
     return;
   }
 
   const res = estimate(model, inputTokens, outputTokens, calls);
   const rv = $('#result-value');
   const rm = $('#result-meta');
+  console.log('[ai-cost] calc result', res, {rv, rm});
   if (rv) rv.textContent = `${formatMoney(res.monthly)} / month`;
   if (rm) rm.textContent = `${formatMoney(res.perCall)} per call @ ${res.inputRate}/${res.outputRate} per 1K tokens`;
+  } catch (e) {
+    console.error('[ai-cost] calc failed', e);
+  }
 }
 
 function initHandlers() {
