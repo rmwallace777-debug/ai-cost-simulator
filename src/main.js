@@ -5,7 +5,7 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 const routes = {
   default: {
     title: 'Free AI API Cost Simulator - Estimate LLM Token Pricing',
-    h1: 'Free AI API Cost Simulator - Estimate LLM Token Pricing',
+    h1: 'Free AI API Cost Simulator - Estimate LLM Token Pricing Instantly',
     desc: 'Estimate API costs for GPT-4, Claude, Gemini, and open-source models. Calculate token expenses for prompts, completions, and fine-tuning before you run.',
   },
 };
@@ -54,10 +54,10 @@ function formatMoney(n) {
 }
 
 function calc() {
-  const model = $('#model')?.value || 'gpt-4o-mini';
-  const inputTokens = parseInt($('#input-tokens')?.value || '0', 10);
-  const outputTokens = parseInt($('#output-tokens')?.value || '0', 10);
-  const calls = parseInt($('#calls')?.value || '1', 10);
+  const model = $('#model').value || 'gpt-4o-mini';
+  const inputTokens = parseInt($('#input-tokens').value || '0', 10);
+  const outputTokens = parseInt($('#output-tokens').value || '0', 10);
+  const calls = parseInt($('#calls').value || '1', 10);
 
   if (!inputTokens && !outputTokens) {
     const rv = $('#result-value');
@@ -77,19 +77,21 @@ function calc() {
 function initHandlers() {
   const recalc = () => calc();
   $$('.input').forEach((el) => el.addEventListener('input', recalc));
-  $('#model')?.addEventListener('change', recalc);
-  $('#calculate-btn')?.addEventListener('click', recalc);
-  $('#reset-btn')?.addEventListener('click', () => {
-    ['input-tokens', 'output-tokens', 'calls'].forEach((id) => {
-      const el = $('#' + id);
-      if (!id.endsWith('tokens')) {
-        if (el) el.value = id === 'calls' ? '1000' : '0';
-      } else {
-        if (el) el.value = '1000';
-      }
+  $('#model').addEventListener('change', recalc);
+  const calculateBtn = $('#calculate-btn');
+  if (calculateBtn) calculateBtn.addEventListener('click', recalc);
+  const resetBtn = $('#reset-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      const inputTokensEl = $('#input-tokens');
+      const outputTokensEl = $('#output-tokens');
+      const callsEl = $('#calls');
+      if (inputTokensEl) inputTokensEl.value = '1000';
+      if (outputTokensEl) outputTokensEl.value = '1000';
+      if (callsEl) callsEl.value = '1000';
+      calc();
     });
-    calc();
-  });
+  }
   calc();
 }
 
