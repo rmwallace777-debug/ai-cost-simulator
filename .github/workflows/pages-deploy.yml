@@ -39,4 +39,4 @@ jobs:
           ls -l dist/assets || true
 
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy dist --project-name=${{ github.event.repository.name }}
+        run: npx wrangler@latest pages deploy dist --project-name=${{ github.event.repository.name }}
