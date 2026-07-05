@@ -28,10 +28,12 @@ const MODELS = {
   'gpt-4o-mini': { input: 0.15, output: 0.6, label: 'GPT-4o Mini' },
   'gpt-4-turbo': { input: 10, output: 30, label: 'GPT-4 Turbo' },
   'gpt-3.5-turbo': { input: 0.5, output: 1.5, label: 'GPT-3.5 Turbo' },
-  'claude-3-5-sonnet': { input: 3, output: 15, label: 'Claude 3.5 Sonnet' },
-  'claude-3-opus': { input: 15, output: 75, label: 'Claude 3 Opus' },
-  'gemini-1.5-pro': { input: 1.25, output: 5, label: 'Gemini 1.5 Pro' },
-  'gemini-2.0-flash': { input: 0.1, output: 0.4, label: 'Gemini 2.0 Flash' },
+  'claude-3-5-sonnet': { input: 0.003, output: 0.015, label: 'Claude 3.5 Sonnet' },
+  'claude-3-opus': { input: 0.015, output: 0.075, label: 'Claude 3 Opus' },
+  'gemini-1.5-pro': { input: 0.00125, output: 0.005, label: 'Gemini 1.5 Pro' },
+  'gemini-2.0-flash': { input: 0.0001, output: 0.0004, label: 'Gemini 2.0 Flash' },
+  'deepseek-v4-flash': { input: 0.002, output: 0.008, label: 'DeepSeek V4 Flash' },
+  'claude-fable-5': { input: 0.01, output: 0.05, label: 'Claude Fable 5' },
 };
 
 function estimate(model, inputTokens, outputTokens, callsPerMonth) {
