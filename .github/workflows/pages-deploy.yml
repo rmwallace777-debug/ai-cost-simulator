@@ -29,5 +29,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Upload to Pages
-        run: npx wrangler pages project upload dist --project-name=${{ github.event.repository.name }} --commit-dirty=true
+      - name: Fix vite executable for CI
+        run: chmod +x node_modules/.bin/vite || true
+
+      - name: Verify dist exists
+        run: |
+          if [ ! -d dist ]; then echo "Missing dist"; exit 1; fi
+          ls -l dist || true
+          ls -l dist/assets || true
+
+      - name: Deploy to Cloudflare Pages
+        run: npx wrangler pages deploy dist --project-name=${{ github.event.repository.name }}

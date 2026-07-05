@@ -1,4 +1,4 @@
-/** AI Cost Simulator - main logic */
+/** tool: ai-cost | build: redeploy-fix */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
 const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
