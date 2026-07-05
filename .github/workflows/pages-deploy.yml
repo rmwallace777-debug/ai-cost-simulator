@@ -26,14 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Make vite executable
-        run: chmod +x node_modules/.bin/vite
-
-      - name: Make vite executable
-        run: chmod +x node_modules/.bin/vite
-
       - name: Build
         run: npm run build
 
-      - name: Deploy to Cloudflare Pages
-        run: npx wrangler@latest pages deploy dist --project-name=${{ github.event.repository.name }}
+      - name: Upload to Pages
+        run: npx wrangler pages project upload dist --project-name=${{ github.event.repository.name }} --commit-dirty=true
